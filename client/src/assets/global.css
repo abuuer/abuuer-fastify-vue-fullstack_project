@@ -1,0 +1,8 @@
+@import url(https://db.onlinewebfonts.com/c/369ac1e77e5e6d5fa59d7c5710882c03?family=Volkart);
+
+body {
+  margin: 0;
+  font-family: "Volkart";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
