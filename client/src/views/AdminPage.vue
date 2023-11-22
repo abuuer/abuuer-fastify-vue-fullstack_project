@@ -10,16 +10,21 @@
       <thead>
         <tr>
           <th>Product Name</th>
-          <th>Subcategory / Category</th>
+          <th>Subcategory</th>
+          <th>Category</th>
           <th>Edit</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.id">
-          <td>{{ product.name }}</td>
-          <td>{{ product.category.name }}</td>
+        <tr v-for="product in productList" :key="product.id">
+          <td>{{ product.name || "NaN" }}</td>
+          <td>{{ product.category.name || "NaN" }}</td>
+          <td>{{ product.category.parent?.name || "NaN" }}</td>
           <td>
-            <button @click="deleteProduct(product.id)" class="delete-button">
+            <button
+              @click="deleteProduct(product.id, product.name)"
+              class="delete-button"
+            >
               Delete
             </button>
           </td>
@@ -31,78 +36,54 @@
       v-if="showAddProductFormFlag"
       :show="showAddProductFormFlag"
       @close="closeAddProductForm"
+      @addProduct="addProduct"
+    />
+
+    <DeleteProductModal
+      v-if="isDeleteConfirmationVisible"
+      :productToDeleteName="productToDeleteName"
+      @close="hideDeleteConfirmation"
     />
   </div>
 </template>
 
 <script>
 import AddProduct from "../components/AddProduct.vue";
+import DeleteProductModal from "../components/DeleteProductModal.vue";
+import { onMounted, ref } from "vue";
+import axios from "../api/axios";
+
+const PRODUCTS_URL = "api/products";
 export default {
   components: {
     AddProduct,
+    DeleteProductModal,
   },
+  setup() {
+    const productList = ref([]);
+    const isDeleteConfirmationVisible = ref(false);
+    const showAddProductFormFlag = ref(false);
+    onMounted(async () => {
+      try {
+        const response = await axios.get(PRODUCTS_URL);
+        productList.value = response.data.products;
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    return { productList, isDeleteConfirmationVisible, showAddProductFormFlag };
+  },
+
   data() {
     return {
-      products: [
-        {
-          id: 2,
-          name: "Asus laptop A25",
-          category_id: 13,
-          created_at: "2023-11-20T17:04:39.512Z",
-          updated_at: "2023-11-20T17:50:13.659Z",
-          picture: "new url",
-          category: {
-            id: 13,
-            name: "Asus",
-            created_at: "2023-11-20T17:00:41.557Z",
-            updated_at: "2023-11-20T17:00:41.557Z",
-            picture: "tthis is a pic url",
-            parent_id: 10,
-          },
-        },
-        {
-          id: 3,
-          name: "Asus X34W",
-          category_id: 13,
-          created_at: "2023-11-20T17:04:51.477Z",
-          updated_at: "2023-11-20T17:04:51.477Z",
-          picture: "tthis is a pic url",
-          category: {
-            id: 13,
-            name: "Asus",
-            created_at: "2023-11-20T17:00:41.557Z",
-            updated_at: "2023-11-20T17:00:41.557Z",
-            picture: "tthis is a pic url",
-            parent_id: 10,
-          },
-        },
-        {
-          id: 7,
-          name: "Asus VL39402",
-          category_id: 13,
-          created_at: "2023-11-21T00:04:55.965Z",
-          updated_at: "2023-11-21T00:04:55.965Z",
-          picture:
-            "C:\\Users\\ismai\\Desktop\\anouar\\fastify-vue-fullstack-project\\server\\uploads\\1700525095962.png",
-          category: {
-            id: 13,
-            name: "Asus",
-            created_at: "2023-11-20T17:00:41.557Z",
-            updated_at: "2023-11-20T17:00:41.557Z",
-            picture: "tthis is a pic url",
-            parent_id: 10,
-          },
-        },
-      ],
-      allSubcategories: [
-        // A combined list of all subcategories
-      ],
-      showAddProductFormFlag: false,
-      newProductName: "",
-      selectedSubcategory: null,
+      productToDeleteName: "",
     };
   },
   methods: {
+    addProduct(newProduct) {
+      this.productList.push(newProduct);
+    },
     getProductSubcategory(product) {
       const subcategory = this.allSubcategories.find((subcategory) =>
         subcategory.products.some((p) => p.id === product.id)
@@ -120,38 +101,34 @@ export default {
     showAddProductForm() {
       this.showAddProductFormFlag = true;
     },
-    // addProduct() {
-    //   if (
-    //     this.newProductName.trim() !== "" &&
-    //     this.selectedSubcategory !== null
-    //   ) {
-    //     const selectedSubcategory = this.allSubcategories.find(
-    //       (subcategory) => subcategory.id === this.selectedSubcategory
-    //     );
-    //     const newProduct = {
-    //       id: this.products.length + 1,
-    //       name: this.newProductName.trim(),
-    //     };
-    //     selectedSubcategory.products.push(newProduct);
-    //     this.products.push(newProduct);
-
-    //     // Reset form
-    //     this.newProductName = "";
-    //     this.selectedSubcategory = null;
-    //     this.showAddProductFormFlag = false;
-    //   }
-    // },
 
     closeAddProductForm() {
       this.showAddProductFormFlag = false;
     },
-    deleteProduct(productId) {
-      const productIndex = this.products.findIndex(
-        (product) => product.id === productId
-      );
-      if (productIndex !== -1) {
-        this.products.splice(productIndex, 1);
-        // Update your data structure accordingly to remove the product
+
+    showDeleteConfirmation(product) {
+      // Store the product to delete and show the modal
+      // productToDelete.value = product;
+      this.isDeleteConfirmationVisible = true;
+    },
+
+    hideDeleteConfirmation() {
+      // Clear the product to delete and hide the modal
+      // productToDelete.value = null;
+      this.isDeleteConfirmationVisible = false;
+    },
+
+    async deleteProduct(productId, productName) {
+      this.productToDeleteName = productName;
+      this.showDeleteConfirmation();
+      try {
+        // const response = await axios.delete(`${PRODUCTS_URL}/${productId}`);
+        // console.log(response);
+        // this.productList = this.productList.filter(
+        //   (product) => product.id !== productId
+        // );
+      } catch (error) {
+        console.log(error);
       }
     },
   },
