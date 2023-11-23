@@ -2,13 +2,19 @@
   <div class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>New Product</h3>
+        <h3>Add New Product</h3>
       </div>
 
       <div class="new-product-form">
         <Form @submit="onSubmit">
           <div>
-            <label>Product Name:</label>
+            <label>Picture *:</label>
+
+            <ImageUploadField :schema="schema" />
+            <ErrorMessage name="productPicture" />
+          </div>
+          <div>
+            <label>Name *:</label>
             <Field
               name="productName"
               id="productName"
@@ -20,78 +26,77 @@
             <ErrorMessage name="productName" />
           </div>
 
-          <div>
-            <label>Product Picture:</label>
-            <Field
-              name="productPicture"
-              id="productPicture"
-              type="file"
-              :rules="schema.picture"
-              v-model="selectedPicture"
-            />
-            <ErrorMessage name="productPicture" />
-          </div>
+          <div class="cat-sub-category">
+            <div>
+              <div class="category-label">
+                <label>Category:</label>
+                <font-awesome-icon
+                  @click="addCategory"
+                  icon="fa-solid fa-plus"
+                />
+              </div>
 
-          <div>
-            <div class="category-label">
-              <label>Category:</label>
-              <font-awesome-icon icon="fa-solid fa-plus" />
-            </div>
-
-            <Field
-              name="category"
-              as="select"
-              :rules="schema.category"
-              class="input-style"
-              @change="handleCategorySelect"
-              id="category"
-              v-model="selectedCategoryId"
-            >
-              <option
-                v-for="category in categories"
-                :key="category.id"
-                :value="category.id"
+              <Field
+                name="category"
+                as="select"
+                :rules="schema.category"
+                class="input-style"
+                @change="handleCategorySelect"
+                id="category"
+                v-model="selectedCategoryId"
               >
-                {{ category.name }}
-              </option>
-            </Field>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.name }}
+                </option>
+              </Field>
 
-            <ErrorMessage name="category" />
-          </div>
-          <div v-if="selectedCategory">
-            <div class="category-label">
-              <label>Sub Category:</label>
-              <font-awesome-icon icon="fa-solid fa-plus" />
+              <ErrorMessage name="category" />
             </div>
-            <Field
-              name="subCategory"
-              as="select"
-              :rules="schema.subCategory"
-              class="input-style"
-              v-model="selectedSubCategory"
-              id="subCategory"
-            >
-              <option
-                v-for="subcategory in selectedCategory.children"
-                :key="subcategory.id"
-                :value="subcategory.id"
+            <div v-if="selectedCategory">
+              <div class="category-label">
+                <label>Sub Category:</label>
+                <font-awesome-icon
+                  @click="addCategory"
+                  icon="fa-solid fa-plus"
+                />
+              </div>
+              <Field
+                name="subCategory"
+                as="select"
+                :rules="schema.subCategory"
+                class="input-style"
+                v-model="selectedSubCategory"
+                id="subCategory"
               >
-                {{ subcategory.name }}
-              </option>
-            </Field>
-            <div
-              v-if="selectedCategory && selectedCategory.children.length === 0"
-            >
-              This category has no sub-categories
+                <option
+                  v-for="subcategory in selectedCategory.children"
+                  :key="subcategory.id"
+                  :value="subcategory.id"
+                >
+                  {{ subcategory.name }}
+                </option>
+              </Field>
+              <span
+                v-if="
+                  selectedCategory && selectedCategory.children?.length === 0
+                "
+              >
+                This category has no sub-categories
+              </span>
+              <ErrorMessage name="subCategory" />
             </div>
-            <ErrorMessage name="subCategory" />
           </div>
+
           <div>
             <div class="buttons">
+              <button type="button" @click="closeAddProduct">Cancel</button>
               <button type="submit" :disabled="isSubmitting">
                 Create Product
               </button>
-              <button type="button" @click="closeAddProductForm">Cancel</button>
             </div>
           </div>
         </Form>
@@ -101,88 +106,29 @@
 </template>
 
 <script>
-import { Buffer } from "buffer";
 import { Field, Form, ErrorMessage } from "vee-validate";
+import { readFileAsBuffer } from "../utils/fileReader";
 import * as Yup from "yup";
 import axios from "../api/axios";
-
+import ImageUploadField from "./ImageUploadField.vue";
+import { inject, ref } from "vue";
 const schema = {
   productName: Yup.string().required("Product name is required"),
   category: Yup.string().required("You must select a category"),
   subCategory: Yup.string().required("You must select a sub-category"),
   picture: Yup.mixed().required("You must upload an image"),
 };
-const categories = [
-  {
-    id: 10,
-    name: "Laptops",
-    created_at: "2023-11-20T14:58:09.254Z",
-    updated_at: "2023-11-20T15:23:10.462Z",
-    picture: "new url",
-    parent_id: null,
-    children: [
-      {
-        id: 13,
-        name: "Asus",
-        created_at: "2023-11-20T17:00:41.557Z",
-        updated_at: "2023-11-20T17:00:41.557Z",
-        picture: "tthis is a pic url",
-        parent_id: 10,
-        _count: {
-          products: 3,
-        },
-      },
-      {
-        id: 15,
-        name: "HP",
-        created_at: "2023-11-20T17:03:43.050Z",
-        updated_at: "2023-11-20T17:03:43.050Z",
-        picture: "tthis is a pic url",
-        parent_id: 10,
-        _count: {
-          products: 0,
-        },
-      },
-      {
-        id: 17,
-        name: "DELL",
-        created_at: "2023-11-20T17:03:50.172Z",
-        updated_at: "2023-11-20T17:03:50.172Z",
-        picture: "tthis is a pic url",
-        parent_id: 10,
-        _count: {
-          products: 0,
-        },
-      },
-    ],
-  },
-  {
-    id: 18,
-    name: "Printers",
-    created_at: "2023-11-20T17:11:43.774Z",
-    updated_at: "2023-11-20T17:11:43.774Z",
-    picture: "tthis is a pic url",
-    parent_id: null,
-    children: [],
-  },
-  {
-    id: 19,
-    name: "Mouses",
-    created_at: "2023-11-20T23:44:06.962Z",
-    updated_at: "2023-11-20T23:44:06.962Z",
-    picture:
-      "C:\\Users\\ismai\\Desktop\\anouar\\fastify-vue-fullstack-project\\server\\uploads\\1700523846855.jpg",
-    parent_id: null,
-    children: [],
-  },
-];
 
 const ADD_PRODUCT_URL = "api/products/create";
 export default {
   name: "AddProduct",
-  components: { ErrorMessage, Field, Form },
+  components: { ErrorMessage, Field, Form, ImageUploadField },
   props: {
     show: Boolean,
+  },
+  setup() {
+    const categories = ref(inject("categories"));
+    return { categories };
   },
   data() {
     return {
@@ -191,25 +137,37 @@ export default {
       selectedSubCategory: null,
       selectedPicture: null,
       schema,
-      categories,
       isSubmitting: false,
     };
   },
   methods: {
-    closeAddProductForm() {
+    closeAddProduct() {
       this.$emit("close");
     },
+    handleImageUpload() {
+      // const input = this.$refs.fileInput.$el; // Access the underlying DOM element
+      const file = this.selectedPicture;
+
+      if (file) {
+        // Update the selected picture and its URL
+        this.selectedPicture = file;
+        this.selectedPictureUrl = URL.createObjectURL(file);
+      }
+    },
+
     handleCategorySelect() {
-      // this.selectedCategory = event.target.value;
-      // console.log(event.target);
-      this.selectedCategory = categories.find(
+      this.selectedCategory = this.categories.find(
         (cat) => cat.id === this.selectedCategoryId
       );
     },
 
+    addCategory() {
+      this.$emit("openAddCategoryModal");
+    },
+
     async onSubmit(values) {
       this.isSubmitting = true;
-      const buffer = await this.readFileAsBuffer(values.productPicture);
+      const buffer = await readFileAsBuffer(values.productPicture);
       const formData = new FormData();
       // Append the buffer as a file to the form data
       formData.append(
@@ -231,23 +189,6 @@ export default {
         console.log(error);
       }
       this.isSubmitting = false;
-    },
-    readFileAsBuffer(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = (event) => {
-          const arrayBuffer = event.target.result;
-          const buffer = Buffer.from(arrayBuffer);
-          resolve(buffer);
-        };
-
-        reader.onerror = (error) => {
-          reject(error);
-        };
-
-        reader.readAsArrayBuffer(file);
-      });
     },
   },
 };
@@ -275,9 +216,9 @@ export default {
 }
 
 .modal-header {
-  background-color: #cfcece96;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  text-align: center;
 }
 
 .modal-header h3 {
@@ -308,9 +249,8 @@ form {
 }
 
 label {
-  margin-bottom: 5px;
-  color: #6d6c6c;
-  font-size: 19px;
+  color: #292929;
+  font-size: 17px;
 }
 
 .input-style {
@@ -363,11 +303,12 @@ label {
 
 button {
   padding: 8px 15px;
-  background-color: #4a54a2de;
+  background-color: #00c9a7;
   color: white;
   cursor: pointer;
   border: none;
   border-radius: 20px;
+  font-weight: bold;
 }
 
 button:disabled,
@@ -376,16 +317,14 @@ button:disabled:hover {
   cursor: default;
 }
 
-button:last-child {
+button:first-child {
   background-color: #ffffff;
   color: black;
   border: 1px solid #b3b3b3de;
 }
 
-button:hover {
-  background-color: #4a54a2;
-}
-button:last-child:hover {
-  background-color: #dfdede91;
+.upload-label {
+  display: block;
+  margin-bottom: 8px;
 }
 </style>

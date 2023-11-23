@@ -3,7 +3,7 @@
     <div class="modal-delete">
       <div class="modal-delete-header">
         <h2>Delete This Product ?</h2>
-        <p class="modal-delete-product-name">{{ productToDeleteName }}</p>
+        <p class="modal-delete-product-name">{{ productToDelete?.name }}</p>
       </div>
       <p class="modal-delete-message">
         <font-awesome-icon icon="fa-solid fa-bell" />
@@ -21,11 +21,14 @@
 export default {
   name: "DeleteProductModal",
   props: {
-    productToDeleteName: String,
+    productToDelete: Object,
   },
   methods: {
     hideDeleteConfirmation() {
       this.$emit("close");
+    },
+    deleteConfirmed() {
+      this.$emit("delete");
     },
   },
 };
@@ -84,6 +87,7 @@ export default {
   align-items: center;
   gap: 10px;
   font-size: 18px;
+  color: rgb(48, 47, 47);
 }
 .modal-delete-message svg {
   font-size: 30px;
@@ -110,5 +114,11 @@ export default {
 .modal-delete-buttons button:last-child {
   background-color: rgb(225 30 60);
   font-weight: bold;
+}
+button {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+button:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 </style>
