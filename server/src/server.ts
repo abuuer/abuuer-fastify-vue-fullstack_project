@@ -3,6 +3,7 @@ import categoryRoutes from "./modules/Category/category.route";
 import productRoutes from "./modules/Product/product.route";
 import multipart from "@fastify/multipart";
 import multer from "multer";
+import cors from "@fastify/cors";
 const server = fastify();
 
 server.get("/", async () => {
@@ -10,7 +11,7 @@ server.get("/", async () => {
 });
 
 server.register(multipart, { attachFieldsToBody: "keyValues" });
-
+server.register(cors);
 server.register(categoryRoutes, { prefix: "api/categories" });
 server.register(productRoutes, { prefix: "api/products" });
 

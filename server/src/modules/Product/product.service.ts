@@ -4,6 +4,17 @@ import { createProductSchema } from "./product.schema";
 const createProduct = async (input: createProductSchema) => {
   const product = await prisma.products.create({
     data: input,
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
+          parent: {
+            select: { id: true, name: true },
+          },
+        },
+      },
+    },
   });
   return product;
 };
@@ -11,7 +22,15 @@ const createProduct = async (input: createProductSchema) => {
 const getProducts = async () => {
   const products = await prisma.products.findMany({
     include: {
-      category: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          parent: {
+            select: { id: true, name: true },
+          },
+        },
+      },
     },
   });
   return products;

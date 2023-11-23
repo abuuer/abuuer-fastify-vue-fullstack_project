@@ -23,6 +23,7 @@ const getCategories = async () => {
     include: {
       children: {
         include: {
+          products: true,
           _count: {
             select: { products: true },
           },

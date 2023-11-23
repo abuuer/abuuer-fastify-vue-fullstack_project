@@ -16,11 +16,12 @@ const createCategoryController = async (
 ) => {
   try {
     const { fileBuffer, fileName, name, parent_id } = req.body;
-
+    let parentId = undefined;
+    if (parent_id) parentId = parseInt(parent_id);
     const fullPath = await uploadImage(fileBuffer, fileName);
     const category = await createCategory({
       name,
-      parent_id,
+      parent_id: parentId,
       picture: fullPath,
     });
     return rep.code(200).send({

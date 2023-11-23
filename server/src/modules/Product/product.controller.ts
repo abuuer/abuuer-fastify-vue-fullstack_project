@@ -15,12 +15,11 @@ const createProductController = async (
   rep: FastifyReply
 ) => {
   const { fileBuffer, fileName, name, category_id } = req.body;
-
-  const fullPath = await uploadImage(fileBuffer, fileName);
   try {
+    const fullPath = await uploadImage(fileBuffer, fileName);
     const product = await createProduct({
       name,
-      category_id,
+      category_id: parseInt(category_id),
       picture: fullPath,
     });
     return rep.code(200).send({

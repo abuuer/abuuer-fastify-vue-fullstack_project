@@ -15,7 +15,7 @@ const reqProductSchema = z.object({
   name: z.string(),
   fileBuffer: z.instanceof(Buffer),
   fileName: z.string(),
-  category_id: z.number(),
+  category_id: z.string(),
 });
 
 export type createProductSchema = z.infer<typeof createProductSchema>;

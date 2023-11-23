@@ -13,7 +13,7 @@ const reqategorySchema = z.object({
   name: z.string(),
   fileBuffer: z.instanceof(Buffer),
   fileName: z.string(),
-  parent_id: z.number().optional(),
+  parent_id: z.string().optional(),
 });
 
 export type createCategorySchema = z.infer<typeof createCategorySchema>;
