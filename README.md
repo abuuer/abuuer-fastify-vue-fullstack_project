@@ -8,7 +8,7 @@ This project is built using Fastify, TypeScript, and VueJS. It includes database
 
 Make sure you have the latest versions of [Node.js](https://nodejs.org/), [npm](https://www.npmjs.com/), and [MySQL](https://www.mysql.com/) installed on your machine.
 
-### Installation
+## Installation
 
 1. **Clone the repository:**
 
@@ -19,17 +19,29 @@ Make sure you have the latest versions of [Node.js](https://nodejs.org/), [npm](
 2. **Navigate to the project directory:**
 
    ```bash
-   cd project-directory
+   cd abuuer-fastify-vue-fullstack_project
    ```
 
-3. **Install dependencies for the Fastify backend:**
+### Run With Docker
+
+```bash
+docker-compose up
+```
+
+this Docker Compose configuration sets up a development environment with three services: a Vue.js client, a Node.js server, and a MySQL database, each running in its own container. The dependencies are managed during container initialization. Additionally, the Prisma migration is configured to create the necessary database tables, and a seed script is executed to populate the database during the setup process.
+
+### Run With Without Docker
+
+### Dependencies Installation
+
+1. **Install dependencies for the Fastify backend:**
 
    ```bash
    cd server
    npm install
    ```
 
-4. **Install dependencies for the VueJS frontend:**
+2. **Install dependencies for the VueJS frontend:**
 
    ```bash
    cd client
@@ -50,12 +62,18 @@ Make sure you have the latest versions of [Node.js](https://nodejs.org/), [npm](
 
 ### Database Migration
 
-1. Run migrations to create the categories and products tables:
+Run migrations to create the categories and products tables:
 
-   ```bash
-   cd server
-   npx prisma migrate dev
-   ```
+```bash
+cd server
+npx prisma migrate dev
+```
+
+### Data Seeding
+
+```bash
+npm run seed
+```
 
 ### Running the Application
 
@@ -79,19 +97,25 @@ Make sure you have the latest versions of [Node.js](https://nodejs.org/), [npm](
 
 ## Features
 
-### Categories
+- **Backend:**
 
-- CRUD API for categories.
-- Display categories as a tree.
-- Show the count of products for each category, including recursive children categories.
+  - Built with Fastify and Typescript.
+  - Uses Prisma for database interaction.
+  - Implements CRUD operations for categories and products.
+  - Displays categories as a tree structure.
+  - Shows the count of products for recursive children categories.
+  - Handles image resizing during uploading to be 320 \* 320.
 
-### Products
+- **Frontend:**
 
-- CRUD API for products.
-- Display top parent categories.
-- Display children of the selected category.
-- Resize images to 320x320 during upload.
-- Delete button with confirmation message.
+  - Developed with the latest version of Vue.js.
+  - Utilizes Vue Router for navigation.
+  - Implements CRUD operations for categories and products.
+  - Displays top parent categories and children of the selected category.
+  - Includes a delete button with a confirmation message.
+
+- **Database:**
+  - MySQL is used as the database.
 
 ## Technologies Used
 
@@ -100,6 +124,29 @@ Make sure you have the latest versions of [Node.js](https://nodejs.org/), [npm](
 - VueJS
 - Prisma
 - MySQL
+
+## Importing Postman Collection
+
+You can easily import the Postman collection associated with this project. Follow the steps below:
+
+1. **Locate to the project directory level:**
+
+   - The file is located in the root directory under the name "fastify-vue-fullstack-project.postman_collection.json"
+
+2. **Open Postman:**
+
+   - Launch Postman on your system.
+
+3. **Click on the "Import" button:**
+
+   - Locate the "Import" button in the top-left corner of the Postman interface.
+
+4. **Choose "Import File":**
+
+   - Select the option to "Import File."
+
+5. **Select the Postman collection file:**
+   - Browse and choose the Postman collection file from the project directory.
 
 ## License
 

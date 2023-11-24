@@ -92,13 +92,15 @@ import * as Yup from "yup";
 import { inject, ref } from "vue";
 import { readFileAsBuffer } from "../utils/fileReader";
 import axios from "../api/axios";
+import { CATEGORY_URL } from "../utils/constant";
+
 const schema = {
   category: Yup.string().required("You must select a category type"),
   newCategoryName: Yup.string().required("Product name is required"),
   picture: Yup.mixed().required("You must upload an image"),
   parentCategory: Yup.string().required("You must select a category"),
 };
-const CATEGORY_URL = "/api/categories";
+
 export default {
   name: "AddCategoryModal",
   components: {
@@ -121,7 +123,6 @@ export default {
       this.$emit("close");
     },
     async addCategory(values) {
-      console.log(values);
       const buffer = await readFileAsBuffer(values.productPicture);
       const formData = new FormData();
       // Append the buffer as a file to the form data
@@ -136,7 +137,7 @@ export default {
       if (values.parentCategory)
         formData.append("parent_id", values.parentCategory);
       try {
-        const response = await axios.post(`${CATEGORY_URL}/create`, formData, {
+        const response = await axios.post(`${CATEGORY_URL}/`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         this.$emit("close");

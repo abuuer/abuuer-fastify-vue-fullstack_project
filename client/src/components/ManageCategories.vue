@@ -19,7 +19,7 @@
             <th class="edit-delete-buttons">EDIT</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="paginatedCategories.length">
           <tr v-for="category in paginatedCategories" :key="category.id">
             <td class="td-image">
               <img :src="`${IMAGE_REQ}${category?.picture}`" alt="" />
@@ -45,6 +45,7 @@
             </td>
           </tr>
         </tbody>
+        <div v-else>No categories to show</div>
       </table>
       <div class="pagination">
         <div>

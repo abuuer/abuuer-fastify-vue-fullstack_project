@@ -19,7 +19,7 @@
             <th class="edit-delete-buttons">EDIT</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="paginatedProducts.length">
           <tr v-for="product in paginatedProducts" :key="product.id">
             <td class="td-image">
               <img :src="`${IMAGE_REQ}${product?.picture}`" alt="" />
@@ -45,6 +45,7 @@
             </td>
           </tr>
         </tbody>
+        <div v-else>No products to show</div>
       </table>
       <div class="pagination">
         <div>
@@ -171,8 +172,6 @@ export default {
   methods: {
     /** API related functions */
     addProduct(newProduct, oldProduct) {
-      console.log(newProduct);
-      console.log(oldProduct);
       if (oldProduct) {
         // Find the index of the old product
         const oldProductIndex = this.productList.findIndex(

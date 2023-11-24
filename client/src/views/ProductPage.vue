@@ -2,7 +2,7 @@
   <div class="home">
     <div class="categories">
       <h2>Categories</h2>
-      <ul>
+      <ul v-if="categories.length">
         <li v-for="category in categories" :key="category.id">
           <p
             @click="selectCategory(category)"
@@ -28,6 +28,7 @@
           </ul>
         </li>
       </ul>
+      <div v-else>No categories to show</div>
     </div>
     <div class="products">
       <h2>Products</h2>
@@ -93,8 +94,6 @@ export default {
      * Updates the selected subcategory and its category accordingly.
      * */
     selectSubCategory(subCategory, category) {
-      console.log(subCategory);
-      console.log(category);
       this.selectedSubCategory = subCategory;
       this.selectedCategory = category;
     },

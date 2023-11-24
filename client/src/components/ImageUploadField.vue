@@ -51,7 +51,6 @@ export default {
       if (file) {
         this.selectedPicture = file;
         this.selectedPictureUrl = URL.createObjectURL(file);
-        console.log(this.selectedPictureUrl);
       }
     },
   },

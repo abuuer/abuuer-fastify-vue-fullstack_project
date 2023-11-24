@@ -183,7 +183,6 @@ export default {
         const response = await axios.post(PRODUCT_URL, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        console.log(response.data.product);
         this.$emit("addProduct", response.data.product);
         this.$emit("close");
         this.$emit("showToast", "New Product Added Successfully", "success");

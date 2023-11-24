@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  client:
+    image: node:lts
+    working_dir: /app
+    volumes:
+      - ./client:/app
+    command: >
+      sh -c "npm install && npm run serve"
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  server:
+    image: node:lts
+    working_dir: /app
+    volumes:
+      - ./server:/app
+    env_file:
+      - ./.env.server
+    environment:
+      - NODE_ENV=development
+    command:
+      [
+        "sh",
+        "-c",
+        "npm install -g npm@10.2.4 && npm install && npx prisma migrate dev --name init && npm install typescript -g && npm run seed && npm run dev",
+      ]
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  database:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: fastify-vue-fullstack-project
+      MYSQL_USER: abuuer
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
