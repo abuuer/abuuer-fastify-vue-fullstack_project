@@ -7,9 +7,9 @@ import {
 } from "./category.controller";
 
 const categoryRoutes = async (server: FastifyInstance) => {
-  server.post("/create", createCategoryController);
+  server.post("/", createCategoryController);
   server.get("/", getCategoriesController);
-  server.post("/update/:id", updateCategoryController);
+  server.put("/:id", updateCategoryController);
   server.delete("/:id", deleteCategoryController);
 };
 

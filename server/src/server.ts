@@ -21,7 +21,7 @@ server.register(fastifyStatic, {
 server.register(categoryRoutes, { prefix: "api/categories" });
 server.register(productRoutes, { prefix: "api/products" });
 
-server.listen({ port: 3000 }, (err) => {
+server.listen({ port: 3000, host: "0.0.0.0" }, (err) => {
   if (err) {
     console.error(err);
     process.exit(1);
