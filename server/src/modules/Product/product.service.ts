@@ -1,5 +1,5 @@
 import prisma from "../../utils/prisma";
-import { createProductSchema } from "./product.schema";
+import { createProductSchema, updateProductSchema } from "./product.schema";
 
 const createProduct = async (input: createProductSchema) => {
   const product = await prisma.products.create({
@@ -36,12 +36,23 @@ const getProducts = async () => {
   return products;
 };
 
-const updateProductById = async (id: number, data: createProductSchema) => {
+const updateProductById = async (id: number, data: updateProductSchema) => {
   const product = await prisma.products.update({
     where: {
       id: id,
     },
     data: data,
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
+          parent: {
+            select: { id: true, name: true },
+          },
+        },
+      },
+    },
   });
   return product;
 };

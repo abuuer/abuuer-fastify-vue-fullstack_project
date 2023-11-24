@@ -4,6 +4,8 @@ import productRoutes from "./modules/Product/product.route";
 import multipart from "@fastify/multipart";
 import multer from "multer";
 import cors from "@fastify/cors";
+import path from "path";
+const fastifyStatic = require("@fastify/static");
 const server = fastify();
 
 server.get("/", async () => {
@@ -12,6 +14,10 @@ server.get("/", async () => {
 
 server.register(multipart, { attachFieldsToBody: "keyValues" });
 server.register(cors);
+server.register(fastifyStatic, {
+  root: path.join(__dirname, "../uploads"),
+  prefix: "/public/",
+});
 server.register(categoryRoutes, { prefix: "api/categories" });
 server.register(productRoutes, { prefix: "api/products" });
 

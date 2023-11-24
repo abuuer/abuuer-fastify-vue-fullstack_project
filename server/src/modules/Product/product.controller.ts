@@ -5,8 +5,8 @@ import {
   getProducts,
   updateProductById,
 } from "./product.service";
-import { createProductSchema, reqProductSchema } from "./product.schema";
-import { uploadImage } from "../../utils/imageUpload";
+import { updateProductSchema, reqProductSchema } from "./product.schema";
+import { uploadImage, deleteImage } from "../../utils/imageUpload";
 
 const createProductController = async (
   req: FastifyRequest<{
@@ -48,13 +48,25 @@ const getProductsController = async (
 };
 
 const updateProductController = async (
-  req: FastifyRequest<{ Params: { id: string }; Body: createProductSchema }>,
+  req: FastifyRequest<{ Params: { id: string }; Body: updateProductSchema }>,
   rep: FastifyReply
 ) => {
+  const { fileBuffer, fileName, name, oldPictureName } = req.body;
+  let picture = undefined;
+  if (fileBuffer && fileName && oldPictureName) {
+    picture = await uploadImage(fileBuffer, fileName);
+    await deleteImage(oldPictureName);
+  }
+
   try {
     const { id } = req.params;
     const data = req.body;
-    const product = await updateProductById(parseInt(id), data);
+    const product = await updateProductById(parseInt(id), {
+      name,
+      picture,
+    });
+    console.log(req.body);
+
     return rep.code(200).send({
       success: true,
       message: "Product updated successfully",
