@@ -30,7 +30,7 @@ docker-compose up
 
 this Docker Compose configuration sets up a development environment with three services: a Vue.js client, a Node.js server, and a MySQL database, each running in its own container. The dependencies are managed during container initialization. Additionally, the Prisma migration is configured to create the necessary database tables, and a seed script is executed to populate the database during the setup process.
 
-### Run With Without Docker
+### Run Without Docker
 
 ### Dependencies Installation
 
