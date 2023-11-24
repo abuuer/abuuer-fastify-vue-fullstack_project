@@ -163,11 +163,19 @@ export default {
   box-sizing: border-box;
   margin-bottom: 20px;
   text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  box-shadow: rgba(189, 189, 190, 0.25) 0px 2px 5px -1px,
+    rgba(175, 173, 173, 0.3) 0px 1px 3px -1px;
+}
+
+.product-item:hover {
+  transform: scale(1.1);
 }
 
 .product-item .product-item__image {
   width: 100%;
-  background-color: #e9b9b917;
+  background-color: #f7fafc;
   padding: 50px; /* Adjust padding as needed */
   box-sizing: border-box;
   display: flex;

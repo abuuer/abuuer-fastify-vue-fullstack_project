@@ -1,35 +1,18 @@
 <template>
   <div class="admin-products-page">
-    <h2>Manage Products</h2>
-
-    <div class="table-header">
+    <div class="title-buttons">
+      <h1>Manage Products</h1>
       <div class="add-buttons">
         <button @click="showAddProduct">Add New Product</button>
+        <!-- <button @click="showAddCategory">Add New Category</button> -->
+      </div>
+    </div>
+
+    <div class="table-header">
+      <!-- <div class="add-buttons">
+        <button @click="showAddProduct">Add New Product</button>
         <button @click="showAddCategory">Add New Category</button>
-      </div>
-      <div class="pagination">
-        <span
-          @click="prevPage"
-          :class="{ 'disabled-pagination': currentPage === 1 }"
-          >Prev</span
-        >
-        <span
-          v-for="page in totalPages"
-          :key="page"
-          :class="{
-            'selected-page': page === currentPage,
-          }"
-          @click="customPage(page)"
-        >
-          {{ page }}</span
-        >
-        <span
-          @click="nextPage"
-          :class="{ 'disabled-pagination': currentPage === totalPages }"
-        >
-          Next
-        </span>
-      </div>
+      </div> -->
     </div>
 
     <!-- Product Table -->
@@ -37,11 +20,11 @@
       <table>
         <thead>
           <tr>
-            <th>Product Image</th>
-            <th>Product Name</th>
-            <th>Subcategory</th>
-            <th>Category</th>
-            <th class="edit-delete-buttons">Edit</th>
+            <th>IMAGE</th>
+            <th>NAME</th>
+            <th>SUBCATEGORY</th>
+            <th>CATEGORY</th>
+            <th class="edit-delete-buttons">EDIT</th>
           </tr>
         </thead>
         <tbody>
@@ -71,6 +54,31 @@
           </tr>
         </tbody>
       </table>
+      <div class="pagination">
+        <div>
+          <span
+            @click="prevPage"
+            :class="{ 'disabled-pagination': currentPage === 1 }"
+            >Prev</span
+          >
+          <span
+            v-for="page in totalPages"
+            :key="page"
+            :class="{
+              'selected-page': page === currentPage,
+            }"
+            @click="customPage(page)"
+          >
+            {{ page }}</span
+          >
+          <span
+            @click="nextPage"
+            :class="{ 'disabled-pagination': currentPage === totalPages }"
+          >
+            Next
+          </span>
+        </div>
+      </div>
     </div>
 
     <AddProduct
@@ -260,9 +268,30 @@ export default {
 
 <style scoped>
 .admin-products-page {
+  background-color: #ffffff;
+  border-radius: 20px;
   max-width: 80%;
   margin: 20px auto;
   padding: 20px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+h1 {
+  font-size: 3rem;
+  color: #020748;
+}
+
+.title-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-buttons button {
+  padding: 20px;
+  font-size: 18px;
+  border-radius: 5px;
+  background-color: #00ca80;
 }
 
 .add-buttons {
@@ -282,10 +311,10 @@ button {
 }
 
 .delete-button {
-  background-color: rgba(225, 30, 59, 0.884);
+  background-color: #ff5771;
 }
 .edit-button {
-  background-color: rgba(55, 99, 221, 0.822);
+  background-color: #216afde1;
 }
 
 table {
@@ -295,16 +324,28 @@ table {
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
 
+thead th {
+  border-bottom: 3px solid #838fc0;
+  color: #979fa8;
+  background-color: #f7f8fc;
+}
+
 td {
-  border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
 }
 
 th {
   text-align: center;
-  padding: 10px 0px;
-  border: 1px solid #ddd;
+  padding: 15px 0px;
+}
+
+tr:nth-child(even) {
+  background-color: #f7f8fc;
+}
+
+tr:nth-child(odd) {
+  background-color: #ffffff;
 }
 
 .td-image {
@@ -336,7 +377,8 @@ button[aria-label] {
 }
 .product-table-container {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .table-header {
@@ -344,6 +386,12 @@ button[aria-label] {
   align-items: center;
   justify-content: space-between;
 }
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .pagination span {
   flex: 1;
   border: 1px solid rgb(231, 230, 230);

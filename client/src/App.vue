@@ -81,10 +81,12 @@ export default {
 };
 </script>
 <style>
+body {
+  background-color: #f6f7fb;
+}
 nav {
   display: flex;
   justify-content: center;
-  background-color: #f0f0f04f;
   padding: 10px;
 }
 
