@@ -11,13 +11,15 @@
       </p>
       <p class="modal-delete-buttons">
         <button @click="hideDeleteConfirmation">Cancel</button
-        ><button @click="deleteConfirmed">Delete</button>
+        ><button @click="deleteProduct">Delete</button>
       </p>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "../api/axios";
+import { PRODUCT_URL } from "../utils/constant";
 export default {
   name: "DeleteProductModal",
   props: {
@@ -27,8 +29,18 @@ export default {
     hideDeleteConfirmation() {
       this.$emit("close");
     },
-    deleteConfirmed() {
-      this.$emit("delete");
+    async deleteProduct() {
+      try {
+        const response = await axios.delete(
+          `${PRODUCT_URL}/${this.productToDelete.id}`
+        );
+        console.log(response);
+        this.$emit("deleteProduct");
+        this.$emit("close");
+        this.$emit("showToast", "Product Deleted Successfully");
+      } catch (error) {
+        this.$emit("showToast", "An error occurred. Please Try Again", "error");
+      }
     },
   },
 };

@@ -31,7 +31,10 @@
     </div>
     <div class="products">
       <h2>Products</h2>
-      <div v-if="selectedSubCategory" class="products-container">
+      <div
+        v-if="selectedSubCategory?.products.length"
+        class="products-container"
+      >
         <div
           v-for="product in selectedSubCategory.products"
           :key="product.id"
@@ -40,9 +43,7 @@
           <div class="image-container">
             <div class="product-item__image">
               <img
-                :src="
-                  require(`C:/Users/ismai/Desktop/anouar/fastify-vue-fullstack-project/server/uploads/keyboard.png`)
-                "
+                :src="`${IMAGE_REQ}${product.picture}`"
                 alt="Product Image"
               />
             </div>
@@ -58,27 +59,25 @@
 </template>
 
 <script>
-import { inject, onBeforeMount, onMounted, reactive, ref } from "vue";
-import axios from "../api/axios";
-import { provide } from "vue";
-
-const CATEGORY_URL = "api/categories";
-
+import { inject, onMounted, ref } from "vue";
+import { IMAGE_REQ } from "../utils/constant";
 export default {
   name: "HomePage",
   setup() {
     let categories = ref(inject("categories"));
     let selectedCategory = ref(null);
     let selectedSubCategory = ref(null);
+    const getAllCategories = inject("getAllCategories");
 
     onMounted(async () => {
+      await getAllCategories();
       selectedCategory.value = categories.value[0];
       selectedSubCategory.value = selectedCategory?.value?.children[0];
     });
     return { categories, selectedCategory, selectedSubCategory };
   },
   data() {
-    return {};
+    return { IMAGE_REQ };
   },
 
   methods: {
@@ -94,6 +93,8 @@ export default {
      * Updates the selected subcategory and its category accordingly.
      * */
     selectSubCategory(subCategory, category) {
+      console.log(subCategory);
+      console.log(category);
       this.selectedSubCategory = subCategory;
       this.selectedCategory = category;
     },

@@ -1,16 +1,10 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import ProdutPage from "../views/ProductPage.vue";
 import AdminPage from "../views/AdminPage.vue";
-import HomePage from "../views/HomePage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "home",
-    component: HomePage,
-  },
-  {
-    path: "/product",
     name: "product",
     component: ProdutPage,
   },
@@ -18,6 +12,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/admin",
     name: "admin",
     component: AdminPage,
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/",
   },
 ];
 

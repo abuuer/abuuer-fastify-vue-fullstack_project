@@ -2,46 +2,76 @@
   <div class="admin-products-page">
     <h2>Manage Products</h2>
 
-    <!-- Add Product/Category Buttons -->
-    <div class="add-buttons">
-      <button @click="showAddProduct">Add New Product</button>
-      <button @click="showAddCategory">Add New Category</button>
+    <div class="table-header">
+      <div class="add-buttons">
+        <button @click="showAddProduct">Add New Product</button>
+        <button @click="showAddCategory">Add New Category</button>
+      </div>
+      <div class="pagination">
+        <span
+          @click="prevPage"
+          :class="{ 'disabled-pagination': currentPage === 1 }"
+          >Prev</span
+        >
+        <span
+          v-for="page in totalPages"
+          :key="page"
+          :class="{
+            'selected-page': page === currentPage,
+          }"
+          @click="customPage(page)"
+        >
+          {{ page }}</span
+        >
+        <span
+          @click="nextPage"
+          :class="{ 'disabled-pagination': currentPage === totalPages }"
+        >
+          Next
+        </span>
+      </div>
     </div>
 
     <!-- Product Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>Product Name</th>
-          <th>Subcategory</th>
-          <th>Category</th>
-          <th class="edit-delete-buttons">Edit</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="product in productList" :key="product.id">
-          <td>{{ product.name || "NaN" }}</td>
-          <td>{{ product.category.name || "NaN" }}</td>
-          <td>{{ product.category.parent?.name || "NaN" }}</td>
-          <td class="edit-delete-buttons">
-            <button
-              @click="showDeleteConfirmation(product)"
-              class="delete-button"
-              aria-label="Delete"
-            >
-              <font-awesome-icon icon="fa-solid fa-trash-can" />
-            </button>
-            <button
-              @click="showEditProduct(product)"
-              class="edit-button"
-              aria-label="Edit"
-            >
-              <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="product-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Product Image</th>
+            <th>Product Name</th>
+            <th>Subcategory</th>
+            <th>Category</th>
+            <th class="edit-delete-buttons">Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="product in paginatedProducts" :key="product.id">
+            <td class="td-image">
+              <img :src="`${IMAGE_REQ}${product?.picture}`" alt="" />
+            </td>
+            <td>{{ product?.name || "NaN" }}</td>
+            <td>{{ product?.category?.name || "NaN" }}</td>
+            <td>{{ product?.category?.parent?.name || "NaN" }}</td>
+            <td class="edit-delete-buttons">
+              <button
+                @click="showDeleteConfirmation(product)"
+                class="delete-button"
+                aria-label="Delete"
+              >
+                <font-awesome-icon icon="fa-solid fa-trash-can" />
+              </button>
+              <button
+                @click="showEditProduct(product)"
+                class="edit-button"
+                aria-label="Edit"
+              >
+                <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <AddProduct
       v-if="isShowAddProductVisible"
@@ -49,22 +79,33 @@
       @close="closeAddProduct"
       @addProduct="addProduct"
       @openAddCategoryModal="showAddCategory"
+      @showToast="showToast"
     />
 
     <DeleteProductModal
       v-if="isDeleteConfirmationModalVisible"
       :productToDelete="productToDelete"
       @close="hideDeleteConfirmation"
-      @delete="deleteProduct"
+      @deleteProduct="deleteProduct"
+      @showToast="showToast"
     />
     <EditProductModal
       v-if="isEditModalVisible"
       :productToEdit="productToEdit"
       @close="hideEditProduct"
+      @addProduct="addProduct"
+      @showToast="showToast"
     />
     <AddCategoryModal
       v-if="isShowAddCategoryVisible"
       @close="closeAddCategory"
+      @showToast="showToast"
+    />
+    <ToastNotification
+      :message="toastMessage"
+      :toastType="toastType"
+      :duration="10000"
+      :showToastNotification="showToastNotification"
     />
   </div>
 </template>
@@ -75,9 +116,9 @@ import AddProduct from "../components/AddProduct.vue";
 import DeleteProductModal from "../components/DeleteProductModal.vue";
 import EditProductModal from "../components/EditProductModal.vue";
 import AddCategoryModal from "../components/AddCategoryModal.vue";
-import axios from "../api/axios";
+import ToastNotification from "../components/ToastNotification.vue";
 
-const PRODUCTS_URL = "api/products";
+import { IMAGE_REQ } from "../utils/constant";
 
 export default {
   components: {
@@ -85,6 +126,7 @@ export default {
     DeleteProductModal,
     EditProductModal,
     AddCategoryModal,
+    ToastNotification,
   },
   setup() {
     const productList = ref(inject("products"));
@@ -92,6 +134,7 @@ export default {
     const isShowAddProductVisible = ref(false);
     const isShowAddCategoryVisible = ref(false);
     const isEditModalVisible = ref(false);
+    const showToastNotification = ref(false);
 
     return {
       productList,
@@ -99,6 +142,8 @@ export default {
       isShowAddProductVisible,
       isEditModalVisible,
       isShowAddCategoryVisible,
+      showToastNotification,
+      IMAGE_REQ,
     };
   },
 
@@ -106,26 +151,63 @@ export default {
     return {
       productToDelete: null,
       productToEdit: null,
+      currentPage: 1,
+      itemsPerPage: 8,
+      toastMessage: "",
+      toastType: "",
     };
   },
+  computed: {
+    paginatedProducts() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.productList.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.productList.length / this.itemsPerPage);
+    },
+  },
   methods: {
-    addProduct(newProduct) {
-      this.productList.push(newProduct);
+    /** API related functions */
+    addProduct(newProduct, oldProduct) {
+      console.log(newProduct);
+      console.log(oldProduct);
+      if (oldProduct) {
+        // Find the index of the old product
+        const oldProductIndex = this.productList.findIndex(
+          (product) => product.id === oldProduct.id
+        );
+
+        // If the old product exists, remove it
+        if (oldProductIndex !== -1) {
+          this.productList.splice(oldProductIndex, 1, newProduct);
+        }
+      } else this.productList.push(newProduct);
     },
-    getProductSubcategory(product) {
-      const subcategory = this.allSubcategories.find((subcategory) =>
-        subcategory.products.some((p) => p.id === product.id)
+    deleteProduct() {
+      this.productList = this.productList.filter(
+        (product) => product.id !== this.productToDelete.id
       );
-      return subcategory ? subcategory.name : "N/A";
     },
-    getProductParentCategory(product) {
-      const subcategory = this.allSubcategories.find((subcategory) =>
-        subcategory.products.some((p) => p.id === product.id)
-      );
-      return subcategory && subcategory.parent
-        ? subcategory.parent.name
-        : "N/A";
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
     },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    customPage(pageNumber) {
+      if (pageNumber >= 1 && pageNumber <= this.totalPages) {
+        this.currentPage = pageNumber;
+      }
+    },
+
+    /**
+     * Modal show/hide methods
+     */
 
     showAddProduct() {
       this.isShowAddProductVisible = true;
@@ -160,20 +242,17 @@ export default {
     hideEditProduct() {
       this.isEditModalVisible = false;
     },
+    /**
+     * Notification alert
+     */
+    showToast(message, type) {
+      this.toastMessage = message;
+      this.toastType = type;
+      this.showToastNotification = true;
 
-    async deleteProduct() {
-      this.isDeleteConfirmationModalVisible = false;
-      try {
-        const response = await axios.delete(
-          `${PRODUCTS_URL}/${this.productToDelete.id}`
-        );
-        console.log(response);
-        this.productList = this.productList.filter(
-          (product) => product.id !== this.productToDelete.id
-        );
-      } catch (error) {
-        console.log(error);
-      }
+      setTimeout(() => {
+        this.showToastNotification = false;
+      }, 3000);
     },
   },
 };
@@ -213,21 +292,34 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
 
-th,
 td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
 }
 
-.edit-delete-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+th {
+  text-align: center;
+  padding: 10px 0px;
+  border: 1px solid #ddd;
 }
 
+.td-image {
+  text-align: center;
+}
+td img {
+  width: 70px;
+  height: 70px;
+}
+.edit-delete-buttons {
+  text-align: center;
+}
+.edit-delete-buttons button {
+  margin-right: 10px; /* Adjust the value as needed */
+}
 th {
   background-color: #dfdede3b;
   color: rgb(0, 0, 0);
@@ -241,5 +333,35 @@ button:hover {
 }
 button[aria-label] {
   overflow: visible;
+}
+.product-table-container {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pagination span {
+  flex: 1;
+  border: 1px solid rgb(231, 230, 230);
+  padding: 5px 20px;
+  cursor: pointer;
+}
+.pagination span:hover {
+  color: rgba(55, 99, 221, 0.726);
+}
+
+.selected-page {
+  background-color: rgba(55, 99, 221, 0.726);
+}
+.pagination .disabled-pagination {
+  cursor: default;
+  color: #9e9e9e;
+}
+.pagination .disabled-pagination:hover {
+  color: #9e9e9e;
 }
 </style>

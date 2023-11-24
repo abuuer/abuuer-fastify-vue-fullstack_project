@@ -23,30 +23,35 @@
 
 <script>
 import { Field } from "vee-validate";
-/**
- * @TODO fix Not allowed to load local resource:
- */
+import { IMAGE_REQ } from "../utils/constant";
+import { ref } from "vue";
 
 export default {
   props: {
     schema: Object, // Pass the schema as a prop
+    pictureName: String,
   },
   components: { Field },
   data() {
     return {
-      selectedPicture: null,
-      selectedPictureUrl: null,
+      IMAGE_REQ,
     };
+  },
+  setup(props) {
+    const selectedPictureUrl = ref(`${IMAGE_REQ}${props?.pictureName}` || null);
+    let selectedPicture = ref(false);
+    if (props?.pictureName) selectedPicture.value = true;
+    return { selectedPictureUrl, selectedPicture };
   },
   methods: {
     handleImageUpload() {
-      const input = this.$refs.fileInput.$el; // Access the underlying DOM element
+      const input = this.$refs.fileInput.$el;
       const file = input.files[0];
 
       if (file) {
-        // Update the selected picture and its URL
         this.selectedPicture = file;
         this.selectedPictureUrl = URL.createObjectURL(file);
+        console.log(this.selectedPictureUrl);
       }
     },
   },

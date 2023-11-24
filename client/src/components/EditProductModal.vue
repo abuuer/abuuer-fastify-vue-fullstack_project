@@ -6,7 +6,7 @@
       </div>
       <Form @submit="saveEdit">
         <div class="modal-edit-input">
-          <ImageUploadField />
+          <ImageUploadField :pictureName="editedProduct.picture" />
           <ErrorMessage name="productPicture" />
         </div>
         <div class="modal-edit-input">
@@ -22,7 +22,7 @@
 
         <div class="modal-edit-buttons">
           <button type="submit">Save</button>
-          <button @click="cancelEdit">Cancel</button>
+          <button type="button" @click="cancelEdit">Cancel</button>
         </div>
       </Form>
     </div>
@@ -32,6 +32,10 @@
 <script>
 import { Field, Form, ErrorMessage } from "vee-validate";
 import ImageUploadField from "./ImageUploadField.vue";
+import { PRODUCT_URL } from "../utils/constant";
+import axios from "../api/axios";
+import { readFileAsBuffer } from "../utils/fileReader";
+
 export default {
   name: "EditProductModal",
   props: {
@@ -53,10 +57,42 @@ export default {
     cancelEdit() {
       this.$emit("close");
     },
-    saveEdit(values) {
-      const editedFields = this.getEditedFields();
-      console.log(this.originalProduct);
-      console.log(editedFields);
+    async saveEdit(values) {
+      let editedFields = this.getEditedFields();
+      const file = values.productPicture;
+      const formData = new FormData();
+      if (file) {
+        const buffer = await readFileAsBuffer(file);
+        formData.append(
+          "fileBuffer",
+          new Blob([buffer], { type: "application/octet-stream" }),
+          "filename.bin"
+        );
+        formData.append("fileName", file.name);
+        formData.append("oldPictureName", this.originalProduct.picture);
+      }
+      if (editedFields.name) formData.append("name", editedFields.name);
+      if (editedFields.name || file) {
+        try {
+          const response = await axios.put(
+            `${PRODUCT_URL}/${this.editedProduct.id}`,
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
+          this.originalProduct = response.data.product;
+          this.$emit("addProduct", response.data.product, this.editedProduct);
+          this.$emit("close");
+          this.$emit("showToast", "Product Edited Successfully");
+        } catch (error) {
+          this.$emit(
+            "showToast",
+            "An error occurred. Please Try Again",
+            "error"
+          );
+        }
+      }
     },
     getEditedFields() {
       const editedFields = {};

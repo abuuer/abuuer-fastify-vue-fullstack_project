@@ -112,6 +112,7 @@ import * as Yup from "yup";
 import axios from "../api/axios";
 import ImageUploadField from "./ImageUploadField.vue";
 import { inject, ref } from "vue";
+import { PRODUCT_URL } from "../utils/constant";
 const schema = {
   productName: Yup.string().required("Product name is required"),
   category: Yup.string().required("You must select a category"),
@@ -119,7 +120,6 @@ const schema = {
   picture: Yup.mixed().required("You must upload an image"),
 };
 
-const ADD_PRODUCT_URL = "api/products/create";
 export default {
   name: "AddProduct",
   components: { ErrorMessage, Field, Form, ImageUploadField },
@@ -180,13 +180,15 @@ export default {
       formData.append("name", values.productName);
       formData.append("category_id", values.subCategory);
       try {
-        const response = await axios.post(ADD_PRODUCT_URL, formData, {
+        const response = await axios.post(PRODUCT_URL, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         console.log(response.data.product);
         this.$emit("addProduct", response.data.product);
+        this.$emit("close");
+        this.$emit("showToast", "New Product Added Successfully", "success");
       } catch (error) {
-        console.log(error);
+        this.$emit("showToast", "An error occurred. Please Try Again", "error");
       }
       this.isSubmitting = false;
     },

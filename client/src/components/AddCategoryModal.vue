@@ -139,11 +139,12 @@ export default {
         const response = await axios.post(`${CATEGORY_URL}/create`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        console.log(response);
+        this.$emit("close");
+        this.$emit("showToast", "New Category Added Successfully");
         if (this.updateCategories)
           this.updateCategories(response.data.category);
       } catch (error) {
-        console.log(error);
+        this.$emit("showToast", "An error occurred. Please Try Again", "error");
       }
     },
   },
