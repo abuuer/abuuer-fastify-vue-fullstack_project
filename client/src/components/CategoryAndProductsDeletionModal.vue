@@ -2,8 +2,8 @@
   <div class="modal-delete-overlay">
     <div class="modal-delete">
       <div class="modal-delete-header">
-        <h2>Delete This Product ?</h2>
-        <p class="modal-delete-product-name">{{ productToDelete?.name }}</p>
+        <h2>Delete This {{ parentType }} ?</h2>
+        <p class="modal-delete-product-name">{{ toBeDeleted?.name }}</p>
       </div>
       <p class="modal-delete-message">
         <font-awesome-icon icon="fa-solid fa-bell" />
@@ -11,7 +11,7 @@
       </p>
       <p class="modal-delete-buttons">
         <button @click="hideDeleteConfirmation">Cancel</button
-        ><button @click="deleteProduct">Delete</button>
+        ><button @click="handleDelete">Delete</button>
       </p>
     </div>
   </div>
@@ -19,25 +19,35 @@
 
 <script>
 import axios from "../api/axios";
-import { PRODUCT_URL } from "../utils/constant";
+import { PRODUCT_URL, CATEGORY_URL } from "../utils/constant";
 export default {
   name: "DeleteProductModal",
   props: {
-    productToDelete: Object,
+    toBeDeleted: Object,
+    parentType: String,
   },
   methods: {
     hideDeleteConfirmation() {
       this.$emit("close");
     },
-    async deleteProduct() {
+    async handleDelete() {
+      const REQ_URL =
+        this.parentType === "Product" ? PRODUCT_URL : CATEGORY_URL;
       try {
         const response = await axios.delete(
-          `${PRODUCT_URL}/${this.productToDelete.id}`
+          `${REQ_URL}/${this.toBeDeleted.id}`
         );
-        console.log(response);
-        this.$emit("deleteProduct");
+
+        if (this.parentType === "Product") {
+          this.$emit("deleteProduct");
+          this.$emit("showToast", "Product Deleted Successfully");
+        }
+        if (this.parentType === "Category") {
+          this.$emit("deleteCategory");
+
+          this.$emit("showToast", "Category Deleted Successfully");
+        }
         this.$emit("close");
-        this.$emit("showToast", "Product Deleted Successfully");
       } catch (error) {
         this.$emit("showToast", "An error occurred. Please Try Again", "error");
       }
@@ -46,7 +56,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .modal-delete-overlay {
   position: fixed;
   top: 0;

@@ -151,7 +151,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .modal-add-category-overlay {
   position: fixed;
   top: 0;
