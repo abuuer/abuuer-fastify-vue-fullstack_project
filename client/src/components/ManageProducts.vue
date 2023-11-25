@@ -273,7 +273,7 @@ h1 {
 }
 
 .title-buttons button {
-  padding: 20px;
+  padding: 10px 20px;
   font-size: 18px;
   border-radius: 5px;
   background-color: #00ca80;

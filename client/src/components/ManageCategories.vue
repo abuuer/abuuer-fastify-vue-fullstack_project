@@ -160,7 +160,7 @@ export default {
         let count = 0;
         if (category.children && category.children.length > 0) {
           category.children.forEach((child) => {
-            count = count + child._count.products;
+            if (child._count) count = count + child._count.products;
           });
         }
         category.productCount = count;
