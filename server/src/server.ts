@@ -12,7 +12,10 @@ server.get("/", async () => {
   return "Hello there! 👋";
 });
 
-server.register(multipart, { attachFieldsToBody: "keyValues" });
+server.register(multipart, {
+  attachFieldsToBody: "keyValues",
+  limits: { fileSize: 2000000 },
+});
 server.register(cors);
 server.register(fastifyStatic, {
   root: path.join(__dirname, "../uploads"),
