@@ -5,8 +5,12 @@ import {
   getCategories,
   updateCategoryById,
 } from "./category.service";
-import { createCategorySchema, reqategorySchema } from "./category.schema";
-import { uploadImage } from "../../utils/imageUpload";
+import {
+  createCategorySchema,
+  reqategorySchema,
+  updateCategorySchema,
+} from "./category.schema";
+import { deleteImage, uploadImage } from "../../utils/imageUpload";
 
 const createCategoryController = async (
   req: FastifyRequest<{
@@ -50,13 +54,21 @@ const getCategoriesController = async (
 };
 
 const updateCategoryController = async (
-  req: FastifyRequest<{ Params: { id: string }; Body: createCategorySchema }>,
+  req: FastifyRequest<{ Params: { id: string }; Body: updateCategorySchema }>,
   rep: FastifyReply
 ) => {
   try {
     const { id } = req.params;
-    const data = req.body;
-    const category = await updateCategoryById(parseInt(id), data);
+    const { fileBuffer, fileName, name, oldPictureName } = req.body;
+    let picture = undefined;
+    if (fileBuffer && fileName && oldPictureName) {
+      picture = await uploadImage(fileBuffer, fileName);
+      await deleteImage(oldPictureName);
+    }
+    const category = await updateCategoryById(parseInt(id), {
+      name,
+      picture,
+    });
     return rep.code(200).send({
       success: true,
       message: "Category updated successfully",

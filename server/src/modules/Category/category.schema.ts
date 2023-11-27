@@ -16,5 +16,13 @@ const reqategorySchema = z.object({
   parent_id: z.string().optional(),
 });
 
+const updateCategorySchema = z.object({
+  name: z.string(),
+  fileBuffer: z.instanceof(Buffer).optional(),
+  fileName: z.string().optional(),
+  picture: z.string().optional(),
+  oldPictureName: z.string().optional(),
+});
 export type createCategorySchema = z.infer<typeof createCategorySchema>;
 export type reqategorySchema = z.infer<typeof reqategorySchema>;
+export type updateCategorySchema = z.infer<typeof updateCategorySchema>;

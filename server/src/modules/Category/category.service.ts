@@ -1,6 +1,6 @@
 import { Categories } from "@prisma/client";
 import prisma from "../../utils/prisma";
-import { createCategorySchema } from "./category.schema";
+import { createCategorySchema, updateCategorySchema } from "./category.schema";
 import { uploadImage } from "../../utils/imageUpload";
 
 const createCategory = async (input: createCategorySchema) => {
@@ -34,12 +34,22 @@ const getCategories = async () => {
   return categories;
 };
 
-const updateCategoryById = async (id: number, data: createCategorySchema) => {
+const updateCategoryById = async (id: number, data: updateCategorySchema) => {
   const category = await prisma.categories.update({
     where: {
       id: id,
     },
     data: data,
+    include: {
+      children: {
+        include: {
+          products: true,
+          _count: {
+            select: { products: true },
+          },
+        },
+      },
+    },
   });
   return category;
 };
@@ -56,7 +66,7 @@ const deleteCategoryById = async (id: number) => {
   });
 
   // Check if the category has children
-  if (category?.children.length) {
+  if (category?.children?.length) {
     // If it has children, delete all children and then delete the parent
     const [childrenCategories, parentCategory] = await prisma.$transaction([
       prisma.categories.deleteMany({
