@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "f5eadc75-9801-4b9a-ac0b-3bd87e3d4d9b",
 		"name": "fastify-vue-fullstack-project",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "31277865"
 	},
 	"item": [
@@ -39,7 +39,18 @@
 								}
 							]
 						},
-						"url": "http://localhost:3000/api/categories"
+						"url": {
+							"raw": "http://localhost:3000/api/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories"
+							]
+						}
 					},
 					"response": []
 				},
@@ -55,7 +66,18 @@
 							"mode": "formdata",
 							"formdata": []
 						},
-						"url": "http://localhost:3000/api/categories"
+						"url": {
+							"raw": "http://localhost:3000/api/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories"
+							]
+						}
 					},
 					"response": []
 				},
@@ -65,15 +87,47 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "",
+									"description": "New Name",
+									"type": "text"
+								},
+								{
+									"key": "fileBuffer",
+									"description": "New Image",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "fileName",
+									"value": "",
+									"description": "New Image Name",
+									"type": "text"
+								},
+								{
+									"key": "oldPictureName",
+									"value": "",
+									"description": "Old Image Name",
+									"type": "text"
 								}
-							}
+							]
 						},
-						"url": "http://localhost:3000/api/categories/10"
+						"url": {
+							"raw": "http://localhost:3000/api/categories/27",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories",
+								"27"
+							]
+						}
 					},
 					"response": []
 				},
@@ -82,7 +136,19 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": "http://localhost:3000/api/categories/2"
+						"url": {
+							"raw": "http://localhost:3000/api/categories/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories",
+								"2"
+							]
+						}
 					},
 					"response": []
 				}
@@ -128,7 +194,18 @@
 								}
 							]
 						},
-						"url": "http://localhost:3000/api/products"
+						"url": {
+							"raw": "http://localhost:3000/api/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products"
+							]
+						}
 					},
 					"response": []
 				},
@@ -149,7 +226,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:3000/api/products"
+						"url": {
+							"raw": "http://localhost:3000/api/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products"
+							]
+						}
 					},
 					"response": []
 				},
@@ -187,7 +275,19 @@
 								}
 							]
 						},
-						"url": "http://localhost:3000/api/products/3"
+						"url": {
+							"raw": "http://localhost:3000/api/products/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"3"
+							]
+						}
 					},
 					"response": []
 				},
@@ -206,7 +306,19 @@
 								}
 							]
 						},
-						"url": "http://localhost:3000/api/products/4"
+						"url": {
+							"raw": "http://localhost:3000/api/products/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"4"
+							]
+						}
 					},
 					"response": []
 				}
