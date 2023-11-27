@@ -43,7 +43,7 @@ services:
       MYSQL_USER: abuuer
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - app-network
 

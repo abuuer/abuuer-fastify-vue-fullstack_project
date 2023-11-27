@@ -8,10 +8,11 @@ import {
   faPenToSquare,
   faPlus,
   faTrashCan,
+  faX,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faPlus, faBell, faTrashCan, faPenToSquare);
+library.add(faPlus, faBell, faTrashCan, faPenToSquare, faX);
 
 createApp(App)
   .use(router)

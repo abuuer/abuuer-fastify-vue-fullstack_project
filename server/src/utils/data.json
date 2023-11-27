@@ -1,0 +1,87 @@
+[
+  {
+    "name": "Electronics",
+    "picture": "3243434235234.jpg",
+    "children": [
+      {
+        "name": "Smartphones",
+        "picture": "3243434235234.jpg",
+        "products": [
+          { "name": "iPhone 13", "picture": "3243434235234.jpg" },
+          { "name": "Samsung Galaxy S21", "picture": "3243434235234.jpg" },
+          { "name": "Google Pixel 6", "picture": "3243434235234.jpg" },
+          { "name": "OnePlus 9", "picture": "3243434235234.jpg" },
+          { "name": "Xiaomi Mi 11", "picture": "3243434235234.jpg" },
+          { "name": "LG Velvet", "picture": "3243434235234.jpg" },
+          { "name": "Sony Xperia 5 III", "picture": "3243434235234.jpg" },
+          { "name": "Huawei P40 Pro", "picture": "3243434235234.jpg" },
+          { "name": "Motorola Edge", "picture": "3243434235234.jpg" },
+          { "name": "Nokia 8.3", "picture": "3243434235234.jpg" }
+        ]
+      },
+      {
+        "name": "Laptops",
+        "picture": "323453423453.jpg",
+        "products": [
+          { "name": "MacBook Pro", "picture": "323453423453.jpg" },
+          { "name": "Dell XPS 13", "picture": "323453423453.jpg" },
+          { "name": "HP Spectre x360", "picture": "323453423453.jpg" },
+          {
+            "name": "Lenovo ThinkPad X1 Carbon",
+            "picture": "323453423453.jpg"
+          },
+          {
+            "name": "Asus ROG Zephyrus G14",
+            "picture": "323453423453.jpg"
+          },
+          {
+            "name": "Microsoft Surface Laptop 4",
+            "picture": "323453423453.jpg"
+          },
+          { "name": "Acer Swift 3", "picture": "323453423453.jpg" },
+          { "name": "Razer Blade 15", "picture": "323453423453.jpg" },
+          { "name": "LG Gram", "picture": "323453423453.jpg" },
+          { "name": "MSI GS66 Stealth", "picture": "323453423453.jpg" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Home and Kitchen",
+    "picture": "897956876095.jpg",
+    "children": [
+      {
+        "name": "Appliances",
+        "picture": "897956876095.jpg",
+        "products": [
+          { "name": "Coffee Maker", "picture": "897956876095.jpg" },
+          { "name": "Microwave Oven", "picture": "897956876095.jpg" },
+          { "name": "Blender", "picture": "897956876095.jpg" },
+          { "name": "Toaster", "picture": "897956876095.jpg" },
+          { "name": "Food Processor", "picture": "897956876095.jpg" },
+          { "name": "Juicer", "picture": "897956876095.jpg" },
+          { "name": "Kettle", "picture": "897956876095.jpg" },
+          { "name": "Air Fryer", "picture": "897956876095.jpg" },
+          { "name": "Espresso Machine", "picture": "897956876095.jpg" },
+          { "name": "Stand Mixer", "picture": "897956876095.jpg" }
+        ]
+      },
+      {
+        "name": "Furniture",
+        "picture": "455475685685675.jpg",
+        "products": [
+          { "name": "Sofa", "picture": "455475685685675.jpg" },
+          { "name": "Dining Table", "picture": "455475685685675.jpg" },
+          { "name": "Bed", "picture": "455475685685675.jpg" },
+          { "name": "Wardrobe", "picture": "455475685685675.jpg" },
+          { "name": "Bookshelf", "picture": "455475685685675.jpg" },
+          { "name": "Coffee Table", "picture": "455475685685675.jpg" },
+          { "name": "Desk", "picture": "455475685685675.jpg" },
+          { "name": "Cabinet", "picture": "455475685685675.jpg" },
+          { "name": "Nightstand", "picture": "455475685685675.jpg" },
+          { "name": "Dresser", "picture": "455475685685675.jpg" }
+        ]
+      }
+    ]
+  }
+]
