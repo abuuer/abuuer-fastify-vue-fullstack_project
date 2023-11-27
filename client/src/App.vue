@@ -31,29 +31,6 @@ export default {
       getAllProducts();
     });
 
-    // allows adding new category from other components
-    const updateCategories = (newCategory) => {
-      if (newCategory.parent_id !== null) {
-        // Find the parent category
-        const parentCategory = categories.value.find(
-          (category) => category.id === newCategory.parent_id
-        );
-
-        if (parentCategory) {
-          // Check if the parent has a 'children' property, if not, initialize it
-          if (!parentCategory.children) {
-            parentCategory.children = [];
-          }
-
-          // Add the new category to the children of the parent
-          parentCategory.children.push(newCategory);
-        }
-      } else {
-        // If parent_id is null, push it to the main categories array
-        categories.value.push(newCategory);
-      }
-    };
-
     const getAllCategories = async () => {
       try {
         const responseCategories = await axios.get(CATEGORY_URL);
@@ -76,7 +53,6 @@ export default {
     provide("categories", categories);
     provide("getAllCategories", getAllCategories);
     provide("getAllProducts", getAllProducts);
-    provide("updateCategories", updateCategories);
   },
 };
 </script>

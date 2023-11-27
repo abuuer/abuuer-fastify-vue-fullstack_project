@@ -2,7 +2,7 @@
   <div class="home">
     <div class="categories">
       <h2>Categories</h2>
-      <ul v-if="categories.length">
+      <ul v-if="categories?.length">
         <li v-for="category in categories" :key="category.id">
           <p
             @click="selectCategory(category)"
@@ -10,7 +10,7 @@
           >
             <span>{{ category.name }}</span>
           </p>
-          <ul v-if="category.children">
+          <ul v-if="category.children?.length">
             <li
               v-for="subcategory in category.children"
               :key="subcategory.id"
@@ -21,7 +21,7 @@
             >
               <span
                 >{{ subcategory.name }} ({{
-                  subcategory._count.products || 0
+                  subcategory._count?.products || 0
                 }})</span
               >
             </li>
@@ -32,8 +32,10 @@
     </div>
     <div class="products">
       <h2>Products</h2>
-      <div
-        v-if="selectedSubCategory?.products.length"
+      <transition-group
+        name="product-fade"
+        tag="div"
+        v-if="selectedSubCategory?.products?.length"
         class="products-container"
       >
         <div
@@ -51,9 +53,9 @@
           </div>
           <p>{{ product.name }}</p>
         </div>
-      </div>
+      </transition-group>
       <div v-else>
-        <p>No products in this category .</p>
+        <p>No products in this category.</p>
       </div>
     </div>
   </div>
@@ -163,9 +165,18 @@ export default {
   margin-bottom: 20px;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.3s ease-in-out;
   box-shadow: rgba(189, 189, 190, 0.25) 0px 2px 5px -1px,
     rgba(175, 173, 173, 0.3) 0px 1px 3px -1px;
+  transition: opacity 0.2s ease-in-out, transform 0.3s ease-in-out;
+}
+.product-fade-enter-active,
+.product-fade-leave-active {
+  transition: opacity 0.2s;
+}
+
+.product-fade-enter-to,
+.product-fade-leave-to {
+  opacity: 0;
 }
 
 .product-item:hover {

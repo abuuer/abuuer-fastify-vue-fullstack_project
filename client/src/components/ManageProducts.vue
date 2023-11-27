@@ -19,7 +19,7 @@
             <th class="edit-delete-buttons">EDIT</th>
           </tr>
         </thead>
-        <tbody v-if="paginatedProducts.length">
+        <tbody v-if="paginatedProducts?.length">
           <tr v-for="product in paginatedProducts" :key="product.id">
             <td class="td-image">
               <img :src="`${IMAGE_REQ}${product?.picture}`" alt="" />
@@ -166,12 +166,13 @@ export default {
       return this.productList.slice(start, end);
     },
     totalPages() {
-      return Math.ceil(this.productList.length / this.itemsPerPage);
+      return Math.ceil(this.productList?.length / this.itemsPerPage);
     },
   },
   methods: {
     /** API related functions */
     addProduct(newProduct, oldProduct) {
+      // removes the old product in case of an edit
       if (oldProduct) {
         // Find the index of the old product
         const oldProductIndex = this.productList.findIndex(

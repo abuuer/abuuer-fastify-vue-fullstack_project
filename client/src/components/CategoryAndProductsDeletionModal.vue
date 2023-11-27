@@ -43,12 +43,13 @@ export default {
           this.$emit("showToast", "Product Deleted Successfully");
         }
         if (this.parentType === "Category") {
-          this.$emit("deleteCategory");
+          this.$emit("deleteCategory", this.toBeDeleted);
 
           this.$emit("showToast", "Category Deleted Successfully");
         }
         this.$emit("close");
       } catch (error) {
+        console.log(error);
         this.$emit("showToast", "An error occurred. Please Try Again", "error");
       }
     },
@@ -63,7 +64,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-
+  z-index: 3;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;

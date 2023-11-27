@@ -111,9 +111,8 @@ export default {
   },
   setup() {
     const categoriesList = ref(inject("categories"));
-    const updateCategories = inject("updateCategories");
 
-    return { categoriesList, updateCategories };
+    return { categoriesList };
   },
   data() {
     return { schema, selectedCategory: null };
@@ -142,8 +141,7 @@ export default {
         });
         this.$emit("close");
         this.$emit("showToast", "New Category Added Successfully");
-        if (this.updateCategories)
-          this.updateCategories(response.data.category);
+        this.$emit("updateCategories", response.data.category);
       } catch (error) {
         this.$emit("showToast", "An error occurred. Please Try Again", "error");
       }
@@ -159,7 +157,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 999;
+  z-index: 2;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;

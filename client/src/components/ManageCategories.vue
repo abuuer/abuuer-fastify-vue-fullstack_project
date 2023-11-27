@@ -8,7 +8,7 @@
     </div>
 
     <!-- Product Table -->
-    <div class="product-table-container">
+    <div class="category-table-container">
       <table>
         <thead>
           <tr>
@@ -19,7 +19,7 @@
             <th class="edit-delete-buttons">EDIT</th>
           </tr>
         </thead>
-        <tbody v-if="paginatedCategories.length">
+        <tbody v-if="paginatedCategories?.length">
           <tr v-for="category in paginatedCategories" :key="category.id">
             <td class="td-image">
               <img :src="`${IMAGE_REQ}${category?.picture}`" alt="" />
@@ -35,13 +35,13 @@
               >
                 <font-awesome-icon icon="fa-solid fa-trash-can" />
               </button>
-              <!-- <button
+              <button
                 @click="showEditCategory(category)"
                 class="edit-button"
                 aria-label="Edit"
               >
                 <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-              </button> -->
+              </button>
             </td>
           </tr>
         </tbody>
@@ -78,6 +78,7 @@
       v-if="isShowAddCategoryVisible"
       @close="closeAddCategory"
       @showToast="showToast"
+      @updateCategories="updateCategories"
     />
 
     <ToastNotification
@@ -95,6 +96,14 @@
       @deleteCategory="deleteCategory"
       @showToast="showToast"
     />
+    <EditCategoryModal
+      v-if="isEditCategoryVisible"
+      :categoryToEdit="categoryToEdit"
+      @close="hideEditCategory"
+      @showDeleteConfirmation="showDeleteConfirmation"
+      @showToast="showToast"
+      @updateCategory="updateCategory"
+    />
   </div>
 </template>
 
@@ -104,6 +113,7 @@ import { IMAGE_REQ } from "../utils/constant";
 import CategoryAndProductsDeletionModal from "./CategoryAndProductsDeletionModal.vue";
 import AddCategoryModal from "./AddCategoryModal.vue";
 import ToastNotification from "./ToastNotification.vue";
+import EditCategoryModal from "./EditCategoryModal.vue";
 
 export default {
   name: "ManageCategories",
@@ -111,6 +121,7 @@ export default {
     CategoryAndProductsDeletionModal,
     AddCategoryModal,
     ToastNotification,
+    EditCategoryModal,
   },
   setup() {
     const categoriesList = ref(inject("categories"));
@@ -118,12 +129,14 @@ export default {
     const isShowAddCategoryVisible = ref(false);
     const isDeleteConfirmationModalVisible = ref(false);
     const showToastNotification = ref(false);
+    const isEditCategoryVisible = ref(false);
 
     return {
       categoriesList,
       isShowAddCategoryVisible,
       isDeleteConfirmationModalVisible,
       showToastNotification,
+      isEditCategoryVisible,
     };
   },
   data() {
@@ -144,7 +157,7 @@ export default {
       return this.categoriesList.slice(start, end);
     },
     totalPages() {
-      return Math.ceil(this.categoriesList.length / this.itemsPerPage);
+      return Math.ceil(this.categoriesList?.length / this.itemsPerPage);
     },
   },
   methods: {
@@ -153,12 +166,12 @@ export default {
         return 0;
       }
 
-      if (category.children && category.children.length > 0) {
+      if (category.children && category.children?.length > 0) {
         if (!category) {
           return 0;
         }
         let count = 0;
-        if (category.children && category.children.length > 0) {
+        if (category.children && category.children?.length > 0) {
           category.children.forEach((child) => {
             if (child._count) count = count + child._count.products;
           });
@@ -169,10 +182,56 @@ export default {
 
       return 0;
     },
-    deleteCategory() {
-      this.categoriesList = this.categoriesList.filter(
-        (product) => product.id !== this.categoryToDelete.id
+    deleteCategory(categoryToDelete) {
+      if (categoryToDelete.parent_id !== null) {
+        // Find the parent category
+        const parentCategory = this.categoriesList.find(
+          (category) => category.id === categoryToDelete.parent_id
+        );
+
+        if (parentCategory && parentCategory.children) {
+          // Remove the categoryToDelete from the parent's children array
+          parentCategory.children = parentCategory.children.filter(
+            (category) => category.id !== categoryToDelete.id
+          );
+        }
+      } else {
+        // If parent_id is null, remove the categoryToDelete from the main categories array
+        this.categoriesList = this.categoriesList.filter(
+          (category) => category.id !== categoryToDelete.id
+        );
+      }
+    },
+    updateCategories(newCategory) {
+      if (newCategory.parent_id !== null) {
+        // Find the parent category
+        const parentCategory = this.categoriesList.find(
+          (category) => category.id === newCategory.parent_id
+        );
+
+        if (parentCategory) {
+          // Check if the parent has children, if not, initialize it
+          if (!parentCategory.children) {
+            parentCategory.children = [];
+          }
+
+          parentCategory.children.push(newCategory);
+        }
+      } else {
+        // If parent_id is null, push it to the main categories array
+        this.categoriesList.push(newCategory);
+      }
+    },
+    updateCategory(newCategory, oldCategory) {
+      // Find the index of the old product
+      const oldCategoryIndex = this.categoriesList.findIndex(
+        (category) => category.id === oldCategory.id
       );
+
+      // If the old category exists, remove it
+      if (oldCategoryIndex !== -1) {
+        this.categoriesList.splice(oldCategoryIndex, 1, newCategory);
+      }
     },
     nextPage() {
       if (this.currentPage < this.totalPages) {
@@ -189,6 +248,10 @@ export default {
         this.currentPage = pageNumber;
       }
     },
+
+    /**
+     * Modal show/hide methods
+     */
     showAddCategory() {
       this.isShowAddCategoryVisible = true;
     },
@@ -198,7 +261,7 @@ export default {
     },
     showDeleteConfirmation(category) {
       console.log(category);
-      if (category.productCount > 0) {
+      if (category.products?.length || category.children?.products?.length) {
         this.showToast(
           "You cannot delete this category because it contains associated products",
           "error"
@@ -216,11 +279,12 @@ export default {
 
     showEditCategory(category) {
       this.categoryToEdit = category;
-      this.isEditModalVisible = true;
+      this.isEditCategoryVisible = true;
     },
     hideEditCategory() {
-      this.isEditModalVisible = false;
+      this.isEditCategoryVisible = false;
     },
+
     /**
      * Notification alert
      */
@@ -338,7 +402,7 @@ button:hover {
 button[aria-label] {
   overflow: visible;
 }
-.product-table-container {
+.category-table-container {
   display: flex;
   flex-direction: column;
   gap: 20px;

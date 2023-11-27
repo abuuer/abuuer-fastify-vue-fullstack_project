@@ -2,23 +2,47 @@
   <div class="modal-edit-overlay">
     <div class="modal-edit">
       <div class="modal-header">
-        <h2>Edit Product</h2>
+        <h2>Edit Category</h2>
       </div>
       <Form @submit="saveEdit">
         <div class="modal-edit-input">
-          <ImageUploadField :pictureName="editedProduct.picture" />
-          <ErrorMessage name="productPicture" />
+          <ImageUploadField :pictureName="editedCategory.picture" />
+          <ErrorMessage name="categoryPicture" />
         </div>
         <div class="modal-edit-input">
           <Field
-            name="editProductName"
-            id="editProductName"
+            name="editCategoryName"
+            id="editCategoryName"
             type="text"
-            placeholder="Enter your product name"
+            placeholder="Enter your category name"
             class="input-style"
-            v-model="editedProduct.name"
+            v-model="editedCategory.name"
           />
         </div>
+        <!-- <div class="sub-categories">
+          <h3>Sub Categories</h3>
+          <div
+            v-if="editedCategory.children?.length"
+            class="modal-edit-subcategories"
+          >
+            <div
+              v-for="subCategory in editedCategory.children"
+              :key="subCategory.id"
+              class="modal-edit-subcategory"
+            >
+              {{ subCategory.name }}
+              <button
+                class="delete-button"
+                type="button"
+                aria-label="Delete"
+                @click="deleteSubcategory(subCategory)"
+              >
+                <font-awesome-icon icon="fa-solid fa-x" />
+              </button>
+            </div>
+          </div>
+          <div v-else>This category has no sub categories</div>
+        </div> -->
 
         <div class="modal-edit-buttons">
           <button type="button" @click="cancelEdit">Cancel</button>
@@ -32,14 +56,14 @@
 <script>
 import { Field, Form, ErrorMessage } from "vee-validate";
 import ImageUploadField from "./ImageUploadField.vue";
-import { PRODUCT_URL } from "../utils/constant";
-import axios from "../api/axios";
+import { CATEGORY_URL } from "../utils/constant";
 import { readFileAsBuffer } from "../utils/fileReader";
+import axios from "../api/axios";
 
 export default {
-  name: "EditProductModal",
+  name: "EditCategoryModal",
   props: {
-    productToEdit: Object,
+    categoryToEdit: Object,
   },
   components: {
     Form,
@@ -49,13 +73,16 @@ export default {
   },
   data() {
     return {
-      editedProduct: { ...this.productToEdit },
-      originalProduct: { ...this.productToEdit },
+      editedCategory: { ...this.categoryToEdit },
+      originalCategory: { ...this.categoryToEdit },
     };
   },
   methods: {
     cancelEdit() {
       this.$emit("close");
+    },
+    deleteSubcategory(subCategory) {
+      this.$emit("showDeleteConfirmation", subCategory);
     },
     async saveEdit(values) {
       let editedFields = this.getEditedFields();
@@ -69,22 +96,25 @@ export default {
           "filename.bin"
         );
         formData.append("fileName", file.name);
-        formData.append("oldPictureName", this.originalProduct.picture);
+        formData.append("oldPictureName", this.originalCategory.picture);
       }
       if (editedFields.name) formData.append("name", editedFields.name);
       if (editedFields.name || file) {
         try {
           const response = await axios.put(
-            `${PRODUCT_URL}/${this.editedProduct.id}`,
+            `${CATEGORY_URL}/${this.editedCategory.id}`,
             formData,
             {
               headers: { "Content-Type": "multipart/form-data" },
             }
           );
-          this.originalProduct = response.data.product;
-          this.$emit("addProduct", response.data.product, this.editedProduct);
-
+          this.originalCategory = response.data.category;
           this.$emit("showToast", "Product Edited Successfully");
+          this.$emit(
+            "updateCategory",
+            response.data.category,
+            this.editedCategory
+          );
         } catch (error) {
           this.$emit(
             "showToast",
@@ -99,9 +129,9 @@ export default {
       const editedFields = {};
 
       // Compare each field to check if it has been edited
-      for (const key in this.editedProduct) {
-        if (this.editedProduct[key] !== this.originalProduct[key]) {
-          editedFields[key] = this.editedProduct[key];
+      for (const key in this.editedCategory) {
+        if (this.editedCategory[key] !== this.originalCategory[key]) {
+          editedFields[key] = this.editedCategory[key];
         }
       }
       return editedFields;
@@ -203,5 +233,47 @@ export default {
 .upload-label {
   display: block;
   margin-bottom: 8px;
+}
+.modal-edit-lign-break {
+  border-top: 1px solid rgb(214, 214, 214);
+  width: 100%;
+  margin-top: 20px;
+}
+.sub-categories {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.sub-categories h3 {
+  display: flex;
+}
+.modal-edit-subcategories {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  width: 100%;
+}
+.modal-edit-subcategory {
+  padding: 10px 10px;
+  background-color: rgb(241, 240, 240);
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+}
+.delete-button {
+  color: #ff5771;
+  font-weight: 900;
+}
+button {
+  display: flex;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
 }
 </style>

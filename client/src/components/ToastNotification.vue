@@ -1,7 +1,7 @@
 <!-- ToastNotification.vue -->
 
 <template>
-  <transition appear name="fade">
+  <transition name="fade" class="toast-body">
     <div
       v-if="showToastNotification"
       class="toast"
@@ -32,16 +32,9 @@ export default {
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 1.3s;
+.toast-body {
+  z-index: 10;
 }
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
 .toast {
   position: fixed;
   bottom: 100px;
@@ -50,5 +43,16 @@ export default {
   padding: 20px 30px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease-in-out;
+}
+.fade-enter-active {
+  transition: opacity 1.3s;
+}
+.fade-leave-active {
+  transition: opacity 1.3s;
+}
+
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
