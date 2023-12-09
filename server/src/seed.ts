@@ -8,7 +8,7 @@ const seedData = async () => {
     const existingCategories = await prisma.categories.count();
 
     if (existingCategories === 0) {
-      const jsonData = await readFile("utils/data.json", "utf-8");
+      const jsonData = await readFile("src/utils/data.json", "utf-8");
       const categoriesData = JSON.parse(jsonData);
 
       for (const parentCategoryData of categoriesData) {
